@@ -1,0 +1,462 @@
+OLTP --> Database --> RDBMS --> Oracle, SQL server, post gres, IBM db2, maria db --> CRUD operations --> ACID principles --> Normalization
+OLAP --> Data warehouse
+
+Big Data
+========
+1990's --> dot com, personal computers
+
+Challenges
+==========
+Volume --> Licensed, High end costly servers
+Velocity --> Speed of data generation
+Veracity --> Unstructured data 
+
+Data Science lifecycle 
+======================
+Data engineering --> collect, storage, processing & managing data [RDBMS/DW, Big data[Hadoop,Spark], Cloud)
+
+Data analysis --> maths, stats, domain expertise [Pandas, R, SQL, Pyspark]
+
+BI/visualisation --> Reports, Dashboards [Power BI, Tableau, Cognos]
+
+Advanced analytics --> ML, DL
+
+Solution development
+
+Hadoop
+======
+Opensource framework to store and process Big data --> Java --> Doug cutting --> 2005 --> Apache
+
+Hadoop cluster --> Master slave architecture --> A group of servers connected together where hadoop software is running set up using
+commodity hardware
+
+Vendors --> Apache (HDFS,MR/YARN), Cloudera/Hortonworks, MapR, MS HD insight, IBM big insight
+
+Modes of installation --> Standalone, Pseudo-distributed, Fully-distributed
+
+Core components
+===============
+
+HDFS --> Hadoop Distributed File System --> Storage layer
+
+Map-Reduce/YARN --> Processing layer
+
+HDFS
+====
+Master-slave architecture
+
+Daemons
+=======
+Master --> Name node ---> is responsible to store metadata about datanodes, blocks and replications
+Slave -->  Data nodes --> are responsible to store the actual data
+
+blocks --> Maximum size of a block is 128 mb, stored/distributed into data nodes in parallel, replicated blocks are stored in serial
+
+fs --> Client library --> Interface between user and hadoop
+
+Fault tolerance --> Each blocks exists 3 times by default --> Replication factor --> 3
+
+Rack awareness --> Replications are put in different nodes/rack/clusters/ data centers
+
+Secondary name node --> Manual back-up of the name node --> Single point of failure
+
+High availability --> Dynamic back-up of name node
+
+Federation --> Set up multiple name nodes to manage seperate namespaces
+
+hadoop fs -put e://unext/cust.csv  /hdfs_folder
+
+Basic linux commands
+====================
+ls --> list the file system'
+jps --> java process status --> tool to list jvm's
+pwd --> present working directory
+mkdir --> To create a new folder
+cd --> change directory
+editors -->  vi, vim, gedit
+cat
+
+hadoop fs -ls /   --> To list the filesystem in hdfs
+hadoop fs -mkdir /newdir --> To create a 
+hadoop fs -put /source_path(local_machine)  /destination_path(hdfs)
+hadoop fs -get /source_path(hdfs)  /destination_path(local_machine)
+
+Mapreduce/YARN 
+==============
+Parallel Processing framework of Hadoop --> Distributed parallel algorithm
+
+Master-slave architecture
+
+Master --> Resource Manager --> Name node --> Allocate resources required to run the job
+Slave --> Node managers --> Data nodes --> To process the requests
+Application master --> Short term process to help facilitate the resources to node manager from resource manager
+
+Mapper program --> Overrides the map class --> business logic
+Reducer program --> Overrides the reduce class --> aggregation logic
+
+input format class
+Combiner / local reducer ---> aggregates the intermediate results of mapper and send it to reducers
+Partitioner --> To send aggregated output to specific output directories
+
+mum --> 20
+blr --> 10
+
+Running python program as mapreduce framework
+=============================================
+Hadoop streaming --> Utility that comes along with hadoop installation, 
+helps to run a executable scripts of python or R programming in JVM/java's MR framework
+Pydoop, hadoopy, mrjob etc.
+
+
+#! --> Path of the interpreter to run the program
+Write your mapper and reducer logic
+give read/write perminssion to mapper and reducer scripts --> chmod a+x mapper.py reducer.py
+/usr/local/hadoop-2.9.1/share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar --> The path of hadoop streaming
+
+cat myfile.txt|python mapper.py
+cat myfile.txt|python mapper.py|sort -k1,1|python reducer.py
+
+hadoop jar /usr/local/hadoop-2.9.1/share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar 
+-input /hdfs_batch5/myfile.txt -output /hdfs_batch5/op -mapper /home/hduser/unext_batch5/mapper.py -reducer /home/hduser/unext_batch5/reducer.py
+
+MR always writes the output as a folder in the "Parquet" file format.
+Parquet --> Compresses columnar file format (Optimized file format)
+
+MR lacked ad-hoc querying capability
+
+Find out the avg salary of an employee grouped by cities
+
+MR --> Java/Python --> Many lines of code
+SQL --> 1 line of code --> SELECT AVG(SAL) FROM EMP GROUPBY (CITY)
+
+PIG --> data flow language (YAHOO)
+
+HIVE --> Data warehouse tool (FB) (HQL)
+Derby/metastore --> Local database --> stores the schema of the tables 
+Thrift server --> JDBC/ODBC --> Cross platform application development
+CLI --> Hive cli/shell, beeline
+Web interface --> HUE --> Only available on Cloudera
+
+sql --> Schema on write
+hive --> schema on read
+
+Move the e1.csv & e2.csv files into hdfs and load them into a hive table
+
+Opensource data warehousing solution developed by FB
+Cross platform application development --> ODBC, JDBC
+Local database --> derby/metastore --> metadata about the data/table
+HUE --> Web interface --> Cloudera 
+
+hive
+show databases;
+set hive.cli.print.header=true;
+set hive.cli.print.current.db=true;
+create database batch5;
+use batch5;
+
+create table emp(name string, sal float, dept string)
+row format delimited
+fields terminated by ',';  # if not specified the default delimiter is ascii
+
+load data local inpath '/home/hduser/batch5/emp.txt' into table emp
+
+1. Copy the data from local to hdfs --> hadoop fs    -put
+2. create a hive table  --> create table emp
+3. load the data from hdfs path into hive table --> load data inpath '/hdfsfilepath'  into table emp
+
+When you use select * or simple where clause hive fetches the data from derby db and shows the data in a logical tabular representation
+
+Internal/managed tables
+=======================
+describe formatted emp
+
+By default a managed table is stored in /user/hive/warehouse/your_db/your_tb in HDFS
+
+When you load a data from hdfs to internal hive table located in hdfs, it moves the data (from hdfs to hive table location of hdfs)
+and if the table is deleted, data is permanently lost
+
+load data inpath 'hdfs_data/emp.txt' into table emp
+
+External tables --> Table is mapped into a hdfs location, data stays intact irrespective of table, data need not be loaded into table
+===============
+create external table emp(name string, sal float, dept string)
+row format delimited
+fields terminated by ','   
+location '/hive_files' ;
+
+Partitioning
+============
+create table emp(name string, sal float, dept string)
+partitioned by (state string)
+#partitioned by (country string, state string)
+row format delimited
+fields terminated by ',';
+
+load data inpath '/hdfs_dir/e.csv' into table emp
+partition(state="KA")
+
+load data inpath 'e1.csv' into table emp
+partition(state="MH")
+
+load data inpath 'e2.csv' into table emp
+partition(state="TN")
+
+show partitions emp
+select * from emp where state="KA"
+
+select avg(sal) from emp where state="KA" --> This triggers a mapreduce job
+select avg(sal) from emp where dept="HR"
+
+# create an external table with partitions
+create external table emp(name string, sal float, dept string)
+partitioned by (state string)
+row format delimited
+fields terminated by ','
+location '/hive;
+
+alter table emp
+add partition(state="KA")
+location '/hive/KA'
+
+alter table emp
+add partition(state="MH")
+location '/hive/MH'
+
+alter table emp drop if exists partition(state="MH")
+insert overwrite directory '/new_dir' select * from emp where city="Blr"
+hadoop fs -cat /new_dir/p*
+
+create table hr_blr as select * from emp where dept="HR"
+Disdavantage of Hive is, it has trigger a MR job for the HQL queries you run, adding delay(latency) to your processing time.
+
+Static and dynamic partitioning
+==========================
+create table master(name string, sal float, dept string)
+row format delimited
+fields terminated by ',';
+
+load data local inpath '/home/hduser/del24/hive/e*.txt' into table emp;
+
+create table static(name string, sal float)
+partitioned by (dept string)
+row format delimited
+fields terminated by ',';
+
+insert into table static partition(dept="HR") select name, sal from master where dept="HR";
+insert into table static partition(dept="FI") select name, sal from master where dept="FI";
+insert into table static partition(dept="Sales") select name, sal from master where dept="Sales";
+
+dynamic partitioning
+=================
+create table dynamic(name string, sal float)
+partitioned by (dept string)
+row format delimited
+fields terminated by ',';
+
+set hive.exec.dynamic.partition.mode=nonstrict
+insert into table dynamic partition(dept) select name, sal,dept from master;
+
+Bucketing
+=========
+create table bucks(name string, sal float)
+partitioned by(dept string)
+clustered by (sal) into 2 buckets
+row format delimited
+fields terminated by ',';
+
+set hive.enforce.bucketing=true
+set hive.enforce.sorting = true
+
+insert into table bucks partition(dept) select name, sal,dept from master
+quit;
+stop-all.sh
+
+# Explore customised, udf, mapside joins, reduce side joins
+*----------------------------------------------------------*
+Spark --> Opensource, Unified, in-memory [RAM], cluster computing framework [written in Scala (functional programming language)] 
+100 times faster than YARN (in-memory), 10 times faster than YARN (in disc)
+
+Unified platform 
+================
+Complex programming logic (RDD syntax to write programs) using Scala, Python, Java, R
+Dataframes
+spark sql
+spark ml, mllib
+spark streaming/real-time
+graph
+
+In-memory
+=========
+traditional systems/disk processing --> data is stored on disk, when processed data is read into RAM, processing occurs in RAM, '
+results are written back to disk
+
+spark in-memory processing --> data is stored in ram across the cluster nodes, processing happens on in-memory data, 
+results are stored in RAM, reducing the need disk i/o
+
+Runs everywhere
+===============
+HDFS,Apache mesos, AWS S3, Azure blob storage
+
+Spark RDD (Resilient Distributed Datasets) --> This is the main abstraction of Spark,
+Logical Split of the data, they can recover/recompute themselves(Resilient), distributed and also immutable
+
+Syntax
+======
+Pyspark
+-----------
+RDD syntax  --> Spark Context --> Implement complex programming logic, no schema (is not ifficially supported by spark anymore because of it's complex syntax
+not so user friendly)
+Dataframes/sql --> Spark Session --> Spark context, streaming context, sql context
+Datasets --> Only for Scala, not available for Python/Java
+
+Lazy evalution
+==============
+Transformations --> The functions or business logic --> Upon applying a transformation/function
+"spark doesn't do any processing", it ONLY creates a "logical plan of execution" (Directed Acyclic Graphs [DAG's])
+
+Actions --> Actual execution of the logical plan
+
+Narrow Transformations 
+Wide Transformations --> requires shuffling
+
+Shared Variables --> Variables that has to be shared among different RDD's 
+
+Accumulators --> the variable is used for aggregation
+Broadcasters --> Only the variable is shown to all the other RDD's
+
+Spark Persistance  --> Save the execution state
+
+# Directed Acyclic Graphs : 
+
+# Dag Scheduler : It completes the computation and execution of stages for a job. Tracks the RDD's--> Assign task to task scheduler
+
+# Task scheduler ( Submitting tasks for execution)
+
+# DAG process:
+
+1. User submits an apache spark application
+
+2. The driver module takes the application (Spark context is set-up)
+
+3. Driver identify transformations & Actions required
+
+4. Creates a logical flow of operations (DAG)
+
+5. Dag is converted into Physical execution plan ( Stages )
+
+6. Then the tasks are sent to the cluster with the help of DAG scheduler
+
+To store data in memory
+=======================
+Persist --> allows to store an RDD or DF in memory, disk spillage can happen if data is too large (memory_only, memory_and_disk, disk_only) 
+Cache --> allows to store an RDD or DF in memory, if data is too large it will throw an exception (meory_only)
+
+
+Spark SQL dataframes
+
+Spark MLlib --> RDD's (outdated)
+Spark ML --> Spark Dataframes
+
+Spark Streaming
+
+Kafka
+
+RDD's exposes API's called as Transformations and Actions
+
+Transformations : Takes one RDD as input and produce another RDD as output
+
+1. Row level transformations : Map, Filter, Flatmap, map partition, map partition with index
+
+2. Aggregations : Reduce bykey,aggregate bykey
+
+3. Joins
+
+4. Ranking: groupbykey
+
+Actions : They produce the final output to the driver program
+
+1. Preview --> Take,Sample,top
+
+2. Collect
+
+3. Reduce
+
+4. Saveastext,saveasseq
+
+
+ transaction --> 172000
+
+custid, prodid, prodname, price, quantity, amount
+
+ customer --> 1000
+
+ custid, cust_name
+
+RDD vs DF
+=========
+Compile time safety --> DF
+Inferschema --> DF
+Optimization(Tungsten) --> Df
+
+collect
+show
+take 
+head
+
+Storm, Flunk, Spark
+
+Kafka --
+> Distributed stream processing framework
+
+
+NOSQL (not only sql) databases--> Collection of Unstructured, Semi-structured data in a non-tabular format
+==============================
+Non-relational databases --> Key & value pairs  (rows and columns in rdbms) to store and retrieve data
+
+Key-value --> redis,riak --> Highly changing data & high availability (use for caching, leaderboards, real-time analytics & messaging)
+
+Column based --> Cassandra, Hbase, aws redshift --> fast query performance for aggregations, Read/write extensions
+
+Document based --> Mongo DB, Couchbase --> Working with occasionaly changing consistant data
+
+Graph based --> Neo4j --> Spatial data storage 
+
+Time series, multi-model
+
+
+Mongo DB
+=========
+Large volumes of data in the form of documents
+
+Features
+=======
+Highly scalable, flexible [allows to work with different data types in a single document]
+Flexible Schema, High performance --> on demand scaling, real-time resources
+
+Aadhar --> MongoDB
+
+RDBMS --> DB --> Tables --> rows and columns
+
+MongoDB --> DB --> Collections --> Documents (Key&value pairs)
+
+find()
+findOne()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
