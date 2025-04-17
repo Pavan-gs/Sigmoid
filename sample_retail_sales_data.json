@@ -1,0 +1,92 @@
+[
+  {
+    "transaction_id": "T0001",
+    "product": "Mouse",
+    "quantity": 8,
+    "price_per_unit": 1121.5,
+    "total_amount": 8972.0,
+    "location": "New York",
+    "transaction_date": "2024-11-17"
+  },
+  {
+    "transaction_id": "T0002",
+    "product": "Charger",
+    "quantity": 8,
+    "price_per_unit": 176.71,
+    "total_amount": 1413.68,
+    "location": "San Francisco",
+    "transaction_date": "2024-01-17"
+  },
+  {
+    "transaction_id": "T0003",
+    "product": "Keyboard",
+    "quantity": 2,
+    "price_per_unit": 503.34,
+    "total_amount": 1006.68,
+    "location": "New York",
+    "transaction_date": "2024-10-16"
+  },
+  {
+    "transaction_id": "T0004",
+    "product": "Mouse",
+    "quantity": 6,
+    "price_per_unit": 805.72,
+    "total_amount": 4834.32,
+    "location": "San Francisco",
+    "transaction_date": "2024-01-20"
+  },
+  {
+    "transaction_id": "T0005",
+    "product": "Desk",
+    "quantity": 9,
+    "price_per_unit": 961.01,
+    "total_amount": 8649.09,
+    "location": "Austin",
+    "transaction_date": "2024-11-14"
+  },
+  {
+    "transaction_id": "T0006",
+    "product": "Laptop",
+    "quantity": 7,
+    "price_per_unit": 45.36,
+    "total_amount": 317.52,
+    "location": "Seattle",
+    "transaction_date": "2024-04-12"
+  },
+  {
+    "transaction_id": "T0007",
+    "product": "Keyboard",
+    "quantity": 4,
+    "price_per_unit": 1110.85,
+    "total_amount": 4443.4,
+    "location": "San Francisco",
+    "transaction_date": "2024-10-10"
+  },
+  {
+    "transaction_id": "T0008",
+    "product": "Charger",
+    "quantity": 0,
+    "price_per_unit": 1382.26,
+    "total_amount": 0.0,
+    "location": "Chicago",
+    "transaction_date": "2024-12-18"
+  },
+  {
+    "transaction_id": "T0009",
+    "product": "Laptop",
+    "quantity": 2,
+    "price_per_unit": 1186.42,
+    "total_amount": 2372.84,
+    "location": "San Francisco",
+    "transaction_date": "2024-11-23"
+  },
+  {
+    "transaction_id": "T0010",
+    "product": "Chair",
+    "quantity": 7,
+    "price_per_unit": 1244.77,
+    "total_amount": 8713.39,
+    "location": "Seattle",
+    "transaction_date": "2024-04-04"
+  }
+]
